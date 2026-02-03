@@ -32,8 +32,14 @@ void vga_disable_cursor();
 
 void vga_16_clear_screen();
 
-void vga_16_pch(char c);
+void vga_16_putc(char c);
 
 void vga_16_puts(char* s);
+
+void vga_set_colors(enum vga_16_COLORS back, enum vga_16_COLORS fore);
+
+void vga_16_puti(uint32_t i);
+
+void vga_16_puthex(uint32_t i);
 
 #endif

@@ -11,8 +11,7 @@ static void update_cursor(uint16_t x, uint16_t y);
 static void scroll_line();
 
 void vga_init(enum vga_16_COLORS back,enum vga_16_COLORS fore) {
-  fg = fore;
-  bg = back;
+  vga_set_colors(back, fore);
   vga_16_clear_screen();
   enable_cursor(12,14);
   update_cursor(0, 0);
@@ -51,7 +50,7 @@ void vga_disable_cursor(){
 	outb(0x3D5, 0x20);
 }
 
-void vga_16_pch(char c){
+void vga_16_putc(char c){
   uint8_t* vga_text_pointer = (uint8_t*) VGA_TEXT_BUFFER;
   uint16_t offset = cursor_pos_y*2*VGA_TEXT_WIDTH+cursor_pos_x*2;
   if(c != '\n'){
@@ -79,9 +78,59 @@ static void scroll_line(){
 void vga_16_puts(char* s){
   uint16_t i = 0;
   while(s[i] != '\0'){
-    vga_16_pch(*(s + i));
+    vga_16_putc(*(s + i));
     i++;
     if(i > 128) return;
   }
   update_cursor(cursor_pos_x, cursor_pos_y);
+}
+
+void vga_16_puti(uint32_t i){
+  uint32_t rev = 0;
+  uint32_t mod = 0;
+  if(i == 0){
+    vga_16_puts("0\n\0");
+  }
+  while(i){
+    mod = i % 10; 
+    rev = rev * 10 + mod;
+    i /= 10;
+  }
+  char c;
+  while(rev){
+    c = (rev%10)+'0';
+    vga_16_putc(c);
+    rev /=10;
+  }
+  vga_16_puts("\n\0");
+}
+
+void vga_16_puthex(uint32_t i){
+  char rev[10] = {'\0'};
+  rev[8] = '\n';
+  uint8_t len = 7;
+  uint32_t mod = 0;
+  vga_16_puts("0x\0");
+  if(i == 0){
+    vga_16_puts("0\n\0");
+    return;
+  }
+  while(i){
+    mod = i % 16; 
+    if(mod < 10){
+      rev[len] = mod + '0';
+    } else {
+      rev[len] = (mod-10) + 'A';
+    }
+    i /= 16;
+    len--;
+  }
+  uint8_t blanks = 0;
+  while(rev[blanks] == '\0') blanks++;
+  vga_16_puts(rev+blanks);
+}
+
+void vga_set_colors(enum vga_16_COLORS back, enum vga_16_COLORS fore){
+  fg = fore;
+  bg = back;
 }
