@@ -1,5 +1,5 @@
-#include "../inc/vga/vga.h"
-#include "../inc/asmIO/asmIO.h"
+#include "../../inc/vga/vga.h"
+#include "../../inc/outxInx/outxInx.h"
 #include <stdint.h>
 
 static uint8_t fg = 0;

@@ -15,7 +15,7 @@ OBJ = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
 ALL_OBJECTS = $(OBJ) $(BUILD_DIR)/boot.o
 
 run: kernel.iso
-	qemu-system-i386 -cdrom kernel.iso
+	qemu-system-i386 -serial stdio -cdrom kernel.iso
 
 # Build the ISO
 # Note: We now depend on kernel.bin, but we can copy it to isodir as just "kernel"

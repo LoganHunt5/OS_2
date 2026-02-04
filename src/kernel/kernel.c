@@ -1,5 +1,6 @@
 #include "inc/vga/vga.h"
 #include "inc/kernel/kernel.h"
+#include "inc/UART/UART.h"
 
 void kernel_start_main(){
   vga_init(VGA_16_BLACK, VGA_16_WHITE);
@@ -18,7 +19,12 @@ void kernel_main(){
     }
   }
   */
-  vga_16_puthex(0);
-  vga_16_puti(12341);
+  if(init_UART() != 0){
+    vga_16_puts("UART ERROR\n");
+    return;
+  }
+  UART_puts("Pee\n\0");
+  UART_puti(100012);
+  UART_puth(0xFA2);
 }
 
