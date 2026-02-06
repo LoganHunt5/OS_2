@@ -10,9 +10,15 @@ C_SOURCES = $(shell find $(SRC_DIR) -name '*.c')
 
 # Convert src/path/file.c -> build/path/file.o
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(C_SOURCES))
+#
+# Find all .asm files
+ASM_SOURCES = $(shell find $(SRC_DIR) -name '*.asm')
+
+# Convert src/path/file.asm -> build/path/file.o
+ASM_OBJ = $(patsubst $(SRC_DIR)/%.asm, $(BUILD_DIR)/%.o, $(ASM_SOURCES))
 
 # Add the boot object
-ALL_OBJECTS = $(OBJ) $(BUILD_DIR)/boot.o
+ALL_OBJECTS = $(OBJ) $(ASM_OBJ) $(BUILD_DIR)/boot.o
 
 run: kernel.iso
 	qemu-system-i386 -serial stdio -cdrom kernel.iso
@@ -26,7 +32,6 @@ kernel.iso: $(BUILD_DIR)/kernel.bin
 	grub-mkrescue -o kernel.iso isodir
 
 # Linker Rule
-# CHANGED: Output is now kernel.bin to avoid conflict with 'kernel' directory
 $(BUILD_DIR)/kernel.bin: $(ALL_OBJECTS)
 	$(CC) -T $(SRC_DIR)/boot/linker.ld -o $@ -ffreestanding -O2 -nostdlib $^ -lgcc
 
@@ -36,6 +41,11 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
 # Assembly Rule
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.asm
+	@mkdir -p $(dir $@)
+	$(ASM) -f elf32 $< -o $@
+
+# Boot Rule
 $(BUILD_DIR)/boot.o: $(SRC_DIR)/boot/boot.s
 	@mkdir -p $(BUILD_DIR)
 	$(ACC) $< -o $@
