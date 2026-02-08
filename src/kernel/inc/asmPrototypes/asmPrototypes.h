@@ -1,1 +1,1 @@
-extern void asm_load_GDT();
+extern void asm_load_GDT(); // example, depricated
