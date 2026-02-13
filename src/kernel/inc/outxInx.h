@@ -1,9 +1,9 @@
 #ifndef ASMIO_H
 #define ASMIO_H
 
-#include <stdint.h>
+#include "stdint.h"
 
-inline void outb(uint16_t port, uint8_t val)
+inline void outb(u16 port, u8 val)
 {
     __asm__ volatile ( "outb %b0, %w1" : : "a"(val), "Nd"(port) : "memory");
     /* There's an outb %al, $imm8 encoding, for compile-time constant port numbers that fit in 8b. (N constraint).
@@ -13,9 +13,9 @@ inline void outb(uint16_t port, uint8_t val)
 }
 
 // from osdev wiki
-inline uint8_t inb(uint16_t port)
+inline u8 inb(u16 port)
 {
-    uint8_t ret;
+    u8 ret;
     __asm__ volatile ( "inb %w1, %b0"
                    : "=a"(ret)
                    : "Nd"(port)

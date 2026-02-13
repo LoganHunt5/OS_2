@@ -1,8 +1,10 @@
-#include "inc/vga/vga.h"
-#include "inc/kernel/kernel.h"
-#include "inc/UART/UART.h"
-#include "inc/GDTIDT/GDT.h"
-#include "inc/GDTIDT/IDT.h"
+/* TODO: Add memset, prob into modules*/
+
+#include "drivers/vga/vga.h"
+#include "kernel.h"
+#include "drivers/UART/UART.h"
+#include "modules/GDTIDT/GDT.h"
+#include "modules/GDTIDT/IDT.h"
 
 void kernel_start_main(){
   vga_init(VGA_16_BLACK, VGA_16_WHITE);

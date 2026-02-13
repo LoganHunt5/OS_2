@@ -1,7 +1,7 @@
 #ifndef VGA_H
 #define VGA_H
 
-#include "stdint.h"
+#include "../../inc/stdint.h"
 
 #define VGA_TEXT_BUFFER 0xB8000
 #define VGA_TEXT_WIDTH 80
@@ -38,8 +38,8 @@ void vga_16_puts(char* s);
 
 void vga_set_colors(enum vga_16_COLORS back, enum vga_16_COLORS fore);
 
-void vga_16_puti(uint32_t i);
+void vga_16_puti(u32 i);
 
-void vga_16_puthex(uint32_t i);
+void vga_16_puthex(u32 i);
 
 #endif

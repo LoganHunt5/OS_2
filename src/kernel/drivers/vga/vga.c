@@ -1,13 +1,12 @@
-#include "../../inc/vga/vga.h"
-#include "../../inc/outxInx/outxInx.h"
-#include <stdint.h>
+#include "vga.h"
+#include "../../inc/outxInx.h"
 
-static uint8_t fg = 0;
-static uint8_t bg = 0;
-static uint16_t cursor_pos_x = 0;
-static uint16_t cursor_pos_y = 0;
-static void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
-static void update_cursor(uint16_t x, uint16_t y);
+static u8 fg = 0;
+static u8 bg = 0;
+static u16 cursor_pos_x = 0;
+static u16 cursor_pos_y = 0;
+static void enable_cursor(u8 cursor_start, u8 cursor_end);
+static void update_cursor(u16 x, u16 y);
 static void scroll_line();
 
 void vga_init(enum vga_16_COLORS back,enum vga_16_COLORS fore) {
@@ -18,23 +17,23 @@ void vga_init(enum vga_16_COLORS back,enum vga_16_COLORS fore) {
 }
 
 void vga_16_clear_screen(){
-  uint16_t* vga_text_pointer = (uint16_t*) VGA_TEXT_BUFFER;
-  uint16_t blank = (bg << 12)+(' '<<4);
-  uint16_t* vga_text_end = VGA_TEXT_WIDTH * 2 * VGA_TEXT_HEIGHT + vga_text_pointer;
-  for(uint16_t* i = vga_text_pointer; i < vga_text_end; i++){
+  u16* vga_text_pointer = (u16*) VGA_TEXT_BUFFER;
+  u16 blank = (bg << 12)+(' '<<4);
+  u16* vga_text_end = VGA_TEXT_WIDTH * 2 * VGA_TEXT_HEIGHT + vga_text_pointer;
+  for(u16* i = vga_text_pointer; i < vga_text_end; i++){
     *i = blank; 
   }
   update_cursor(0, 0);
 }
 
-void vga_16_goto(uint16_t x, uint16_t y){
+void vga_16_goto(u16 x, u16 y){
     cursor_pos_x = x;
     cursor_pos_y = y;
     update_cursor(x, y);
 }
 
 /*Start and end are scanlines*/
-static void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
+static void enable_cursor(u8 cursor_start, u8 cursor_end){
 	outb(0x3D4, 0x0A);
 	outb(0x3D5, (inb(0x3D5) & 0xC0) | cursor_start);
 
@@ -42,13 +41,13 @@ static void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
 	outb(0x3D5, (inb(0x3D5) & 0xE0) | cursor_end);
 }
 
-static void update_cursor(uint16_t x, uint16_t y){
-  uint16_t pos= y * VGA_TEXT_WIDTH + x;
+static void update_cursor(u16 x, u16 y){
+  u16 pos= y * VGA_TEXT_WIDTH + x;
 
 	outb(0x3D4, 0x0F);
-	outb(0x3D5, (uint8_t) (pos & 0xFF));
+	outb(0x3D5, (u8) (pos & 0xFF));
 	outb(0x3D4, 0x0E);
-	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+	outb(0x3D5, (u8) ((pos >> 8) & 0xFF));
 }
 
 void vga_disable_cursor(){
@@ -57,8 +56,8 @@ void vga_disable_cursor(){
 }
 
 void vga_16_putc(char c){
-  uint8_t* vga_text_pointer = (uint8_t*) VGA_TEXT_BUFFER;
-  uint16_t offset = cursor_pos_y*2*VGA_TEXT_WIDTH+cursor_pos_x*2;
+  u8* vga_text_pointer = (u8*) VGA_TEXT_BUFFER;
+  u16 offset = cursor_pos_y*2*VGA_TEXT_WIDTH+cursor_pos_x*2;
   if(c != '\n'){
     *(vga_text_pointer+offset) = c; 
     *(vga_text_pointer+offset+1) = (bg << 4) + fg; 
@@ -74,15 +73,15 @@ void vga_16_putc(char c){
 static void scroll_line(){
   cursor_pos_y--;
   update_cursor(cursor_pos_x, cursor_pos_y);
-  uint16_t* vga_text_pointer = (uint16_t*) VGA_TEXT_BUFFER;
-  uint16_t* vga_text_end = VGA_TEXT_WIDTH * 2 * (VGA_TEXT_HEIGHT-1) + vga_text_pointer;
-  for(uint16_t* i = vga_text_pointer; i < vga_text_end; i++){
+  u16* vga_text_pointer = (u16*) VGA_TEXT_BUFFER;
+  u16* vga_text_end = VGA_TEXT_WIDTH * 2 * (VGA_TEXT_HEIGHT-1) + vga_text_pointer;
+  for(u16* i = vga_text_pointer; i < vga_text_end; i++){
     *i = *(i+VGA_TEXT_WIDTH); 
   }
 }
 
 void vga_16_puts(char* s){
-  uint16_t i = 0;
+  u16 i = 0;
   while(s[i] != '\0'){
     vga_16_putc(*(s + i));
     i++;
@@ -92,8 +91,8 @@ void vga_16_puts(char* s){
 }
 
 void vga_16_puti(uint32_t i){
-  uint32_t rev = 0;
-  uint32_t mod = 0;
+  u32 rev = 0;
+  u32 mod = 0;
   if(i == 0){
     vga_16_puts("0\n\0");
   }
@@ -114,8 +113,8 @@ void vga_16_puti(uint32_t i){
 void vga_16_puthex(uint32_t i){
   char rev[10] = {'\0'};
   rev[8] = '\n';
-  uint8_t len = 7;
-  uint32_t mod = 0;
+  u8 len = 7;
+  u32 mod = 0;
   vga_16_puts("0x\0");
   if(i == 0){
     vga_16_puts("0\n\0");
@@ -131,7 +130,7 @@ void vga_16_puthex(uint32_t i){
     i /= 16;
     len--;
   }
-  uint8_t blanks = 0;
+  u8 blanks = 0;
   while(rev[blanks] == '\0') blanks++;
   vga_16_puts(rev+blanks);
 }

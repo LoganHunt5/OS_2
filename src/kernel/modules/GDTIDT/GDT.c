@@ -1,5 +1,4 @@
-#include "../../inc/GDTIDT/GDT.h"
-#include "../../inc/UART/UART.h"
+#include "GDT.h"
 #include <stdint.h>
 
 static struct gdt_entry  _gdt[5]; // 5 is current max number of descriptors

@@ -1,7 +1,7 @@
-#include "../../inc/GDTIDT/IDT.h"
+#include "IDT.h"
 #include <stdbool.h>
-#include "../../inc/UART/UART.h"
-#include "../../inc/vga/vga.h"
+#include "../../drivers/UART/UART.h"
+#include "../../drivers/vga/vga.h"
 
 #define MAX_INTERRUPTS 256 
 

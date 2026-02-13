@@ -1,10 +1,10 @@
-#include "../../inc/UART/UART.h"
-#include "../../inc/outxInx/outxInx.h"
-#include <stdint.h>
+#include "UART.h"
+#include "../../inc/outxInx.h"
+#include "../../inc/stdint.h" 
 
 #define PORT 0x3F8  //COM1
 
-uint8_t init_UART() {
+u8 init_UART() {
   outb(PORT+1, 0x0);  // disable all interrupts
   outb(PORT+3, 0x80); // enable Divisor latch
   outb(PORT, 0x0);    // baud high
@@ -16,7 +16,7 @@ uint8_t init_UART() {
   outb(PORT+4, 0x1E); // interrupt enable and set loopback for testing
   
   outb(PORT, 0xF1);
-  uint8_t res = inb(PORT);
+  u8 res = inb(PORT);
 
   if(res != 0xF1) {
     return 1;
@@ -27,7 +27,7 @@ uint8_t init_UART() {
   }
 }
 
-static void put_char(char c){
+static void put_char(u8 c){
   while((inb(PORT+5) & 0b00100000) == 0); // poll to see if output buffer is full
   outb(PORT,c);
 }
@@ -40,9 +40,9 @@ void UART_puts(char *c){
   }
 }
 
-void UART_puti(uint32_t i){
-  uint32_t rev = 0;
-  uint32_t mod = 0;
+void UART_puti(u32 i){
+  u32 rev = 0;
+  u32 mod = 0;
   if(i == 0){
     UART_puts("0\n\0");
   }
@@ -60,11 +60,11 @@ void UART_puti(uint32_t i){
   UART_puts("\n\0");
 }
 
-void UART_puth(uint32_t i){
+void UART_puth(u32 i){
   char rev[10] = {'\0'};
   rev[8] = '\n';
-  uint8_t len = 7;
-  uint32_t mod = 0;
+  u8 len = 7;
+  u32 mod = 0;
   UART_puts("0x\0");
   if(i == 0){
     UART_puts("0\n\0");
@@ -80,7 +80,7 @@ void UART_puth(uint32_t i){
     i /= 16;
     len--;
   }
-  uint8_t blanks = 0;
+  u8 blanks = 0;
   while(rev[blanks] == '\0') blanks++;
   UART_puts(rev+blanks);
 
