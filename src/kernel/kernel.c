@@ -2,20 +2,24 @@
 #include "inc/kernel/kernel.h"
 #include "inc/UART/UART.h"
 #include "inc/GDTIDT/GDT.h"
+#include "inc/GDTIDT/IDT.h"
 
 void kernel_start_main(){
   vga_init(VGA_16_BLACK, VGA_16_WHITE);
   initialize_gdt();
-  kernel_main();
-}
-void kernel_main(){
-
+  initialize_idt(0x08);
   if(init_UART() != 0){
     vga_16_puts("UART ERROR\n");
     return;
   }
-  UART_puts("oOo\n\0");
-  UART_puti(100012);
-  UART_puth(0xFA2);
+  uint16_t cs_val;
+  kernel_main();
+}
+void kernel_main(){
+  asm volatile("int %0" : : "i" (0));
+
+  UART_puts("inited everything\n\0");
+  // UART_puti(100012);
+  // UART_puth(0xFA2);
 }
 

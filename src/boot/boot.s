@@ -33,7 +33,7 @@ undefined behavior.
 .section .bss
 .align 16
 stack_bottom:
-.skip 0x90000 # 16 KiB
+.skip 0x4000 # 16 KiB
 stack_top:
 
 /*

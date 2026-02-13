@@ -27,6 +27,12 @@ void vga_16_clear_screen(){
   update_cursor(0, 0);
 }
 
+void vga_16_goto(uint16_t x, uint16_t y){
+    cursor_pos_x = x;
+    cursor_pos_y = y;
+    update_cursor(x, y);
+}
+
 /*Start and end are scanlines*/
 static void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
 	outb(0x3D4, 0x0A);

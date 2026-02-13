@@ -1,8 +1,11 @@
 #include "../../inc/GDTIDT/GDT.h"
+#include "../../inc/UART/UART.h"
 #include <stdint.h>
 
 static struct gdt_entry  _gdt[5]; // 5 is current max number of descriptors
 static struct gdtr _gdtr;
+
+extern void load_gdt(uint32_t gdt_ptr);
 
 static void make_gdt_entry(uint64_t i, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags){
   _gdt[i].base_high = (base >> 24) & 0xFF;
@@ -15,8 +18,9 @@ static void make_gdt_entry(uint64_t i, uint32_t base, uint32_t limit, uint8_t ac
   _gdt[i].flags |= (flags & 0xF0); // flags
 }
 
-static void load_gdt(){
-  asm volatile("lgdt %0" : : "m"(_gdtr));
+static void setup_load_gdt(){
+  load_gdt((uint32_t)&_gdtr);
+  // asm volatile("lgdt %0" : : "m"(_gdtr));
 }
 
 static void fill_gdtr(){
@@ -29,9 +33,9 @@ void initialize_gdt(){
   fill_gdtr();
 
   make_gdt_entry(0, 0, 0, 0, 0);   // null
-  make_gdt_entry(1, 0, 0xFFFF, 0b10011011, 0b0001100);   // kernel code
-  make_gdt_entry(2, 0, 0xFFFF, 0b10010011, 0b0001100);   // kernel data
-  make_gdt_entry(3, 0, 0xFFFF, 0b11111011, 0b0001100);   // user code
-  make_gdt_entry(4, 0, 0xFFFF, 0b11110011, 0b0001100);   // user data
-  load_gdt();
+  make_gdt_entry(1, 0, 0xFFFFF, 0b10011011, 0b11000000);   // kernel code
+  make_gdt_entry(2, 0, 0xFFFF, 0b10010011, 0b11000000);   // kernel data
+  make_gdt_entry(3, 0, 0xFFFF, 0b11111011, 0b11000000);   // user code
+  make_gdt_entry(4, 0, 0xFFFF, 0b11110011, 0b11000000);   // user data
+  setup_load_gdt();
 }
