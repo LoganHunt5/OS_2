@@ -61,17 +61,18 @@ void UART_puti(u32 i){
 }
 
 void UART_puth(u32 i){
-  char rev[10] = {'\0'};
+  char rev[10];
+  rev[9] = '\0';
   rev[8] = '\n';
-  u8 len = 7;
+  s32 len = 7;
   u32 mod = 0;
   UART_puts("0x\0");
   if(i == 0){
-    UART_puts("0\n\0");
+    UART_puts("00000000\n\0");
     return;
   }
-  while(i){
-    mod = i % 16; 
+  while(i && len >= 0){
+    mod = i % 16;
     if(mod < 10){
       rev[len] = mod + '0';
     } else {
@@ -80,8 +81,10 @@ void UART_puth(u32 i){
     i /= 16;
     len--;
   }
-  u8 blanks = 0;
-  while(rev[blanks] == '\0') blanks++;
-  UART_puts(rev+blanks);
+  while(len >= 0){
+    rev[len] = '0';
+    len--;
+  }
+  UART_puts(rev);
 
 }

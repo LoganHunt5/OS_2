@@ -25,12 +25,12 @@ void default_handler(){
 
 static void fill_idtr(){
   _idtr.limit = sizeof(struct idt_entry) * MAX_INTERRUPTS - 1; // 5 is number of gdt_entries
-  _idtr.base = (uint32_t)&_idt[0];
+  _idtr.base = (u32)&_idt[0];
 }
 
 // fills an interrupt index in ir table
 // irq is a function pointer
-int install_ir(uint32_t i, uint16_t sel, uint8_t flags, irq_handler irq){
+u32 install_ir(u32 i, u16 sel, u8 flags, irq_handler irq){
   if(i > MAX_INTERRUPTS){
     return 0;
   }
@@ -38,19 +38,19 @@ int install_ir(uint32_t i, uint16_t sel, uint8_t flags, irq_handler irq){
     return 0;
   }
   // make sure we have address
-  uint32_t irq_address = (uint32_t)&(*irq);
+  u32 irq_address = (u32)&(*irq);
   
   _idt[i].selector = sel;
   _idt[i].zero = 0;
-  _idt[i].type_attributes = (uint8_t)flags;
-  _idt[i].offset_1 = (uint16_t)irq_address & 0xFFFF;
-  _idt[i].offset_2 = (uint16_t)((irq_address >> 16) & 0xFFFF);
+  _idt[i].type_attributes = (u8)flags;
+  _idt[i].offset_1 = (u16)irq_address & 0xFFFF;
+  _idt[i].offset_2 = (u16)((irq_address >> 16) & 0xFFFF);
   
   return 0;
 }
 
 // sets up idt with default handler in all slots. code sel is our kernel code selector
-void initialize_idt(uint16_t code_sel){
+void initialize_idt(u16 code_sel){
   fill_idtr();
 
   for(int i = 0; i< MAX_INTERRUPTS; i++){

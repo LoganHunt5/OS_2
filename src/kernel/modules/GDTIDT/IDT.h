@@ -1,16 +1,16 @@
-#include <stdint.h>
+#include "../../inc/stdint.h"
 
 struct idt_entry{
-   uint16_t offset_1;        // offset bits 0..15
-   uint16_t selector;        // a code segment selector in GDT or LDT
-   uint8_t  zero;            // unused, set to 0
-   uint8_t  type_attributes; // gate type, dpl, and p fields
-   uint16_t offset_2;        // offset bits 16..31
+   u16 offset_1;        // offset bits 0..15
+   u16 selector;        // a code segment selector in GDT or LDT
+   u8  zero;            // unused, set to 0
+   u8  type_attributes; // gate type, dpl, and p fields
+   u16 offset_2;        // offset bits 16..31
 }__attribute__((packed));
 
 struct idtr{
-  uint16_t  limit;
-  uint32_t  base;
+  u16  limit;
+  u32  base;
 }__attribute__((packed));
 
 void default_handler();

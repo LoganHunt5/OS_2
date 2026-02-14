@@ -110,18 +110,19 @@ void vga_16_puti(uint32_t i){
   vga_16_puts("\n\0");
 }
 
-void vga_16_puthex(uint32_t i){
-  char rev[10] = {'\0'};
+void vga_16_puthex(u32 i){
+  char rev[10];
+  rev[9] = '\0';
   rev[8] = '\n';
-  u8 len = 7;
+  s32 len = 7;
   u32 mod = 0;
   vga_16_puts("0x\0");
   if(i == 0){
-    vga_16_puts("0\n\0");
+    vga_16_puts("00000000\n\0");
     return;
   }
-  while(i){
-    mod = i % 16; 
+  while(i && len >= 0){
+    mod = i % 16;
     if(mod < 10){
       rev[len] = mod + '0';
     } else {
@@ -130,9 +131,11 @@ void vga_16_puthex(uint32_t i){
     i /= 16;
     len--;
   }
-  u8 blanks = 0;
-  while(rev[blanks] == '\0') blanks++;
-  vga_16_puts(rev+blanks);
+  while(len >= 0){
+    rev[len] = '0';
+    len--;
+  }
+  vga_16_puts(rev);
 }
 
 void vga_set_colors(enum vga_16_COLORS back, enum vga_16_COLORS fore){

@@ -1,12 +1,11 @@
 #include "GDT.h"
-#include <stdint.h>
 
 static struct gdt_entry  _gdt[5]; // 5 is current max number of descriptors
 static struct gdtr _gdtr;
 
-extern void load_gdt(uint32_t gdt_ptr);
+extern void load_gdt(u32 gdt_ptr);
 
-static void make_gdt_entry(uint64_t i, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags){
+static void make_gdt_entry(u32 i, u32 base, u32 limit, u8 access, u8 flags){
   _gdt[i].base_high = (base >> 24) & 0xFF;
   _gdt[i].base_mid = (base >> 16) & 0xFF;
   _gdt[i].base_low = base & 0xFFFF;
@@ -18,13 +17,13 @@ static void make_gdt_entry(uint64_t i, uint32_t base, uint32_t limit, uint8_t ac
 }
 
 static void setup_load_gdt(){
-  load_gdt((uint32_t)&_gdtr);
+  load_gdt((u32)&_gdtr);
   // asm volatile("lgdt %0" : : "m"(_gdtr));
 }
 
 static void fill_gdtr(){
   _gdtr.limit = sizeof(struct gdt_entry) * 5 - 1; // 5 is number of gdt_entries
-  _gdtr.base = (uint32_t)&_gdt[0];
+  _gdtr.base = (u32)&_gdt[0];
 }
 
 void initialize_gdt(){

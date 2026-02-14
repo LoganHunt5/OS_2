@@ -1,22 +1,22 @@
-#include <stdint.h>
+#include "../../inc/stdint.h"
 
 
 struct gdt_entry{
 
-  uint16_t limit;
+  u16 limit;
 
-  uint16_t base_low;
-  uint8_t base_mid;
+  u16 base_low;
+  u8 base_mid;
 
-  uint8_t access;
-  uint8_t flags;
-  uint8_t base_high;
+  u8 access;
+  u8 flags;
+  u8 base_high;
 
 } __attribute__((packed));
 
 struct gdtr{
-  uint16_t  limit;
-  uint32_t  base;
+  u16  limit;
+  u32  base;
 }__attribute__((packed));
 
 

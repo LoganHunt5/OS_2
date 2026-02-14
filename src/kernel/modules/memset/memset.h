@@ -1,2 +1,2 @@
-#include <stdint.h>
-void *memset(void *s, uint32_t c, uint32_t n);
+#include "../../inc/stdint.h"
+void *memset(void *dest, u8 val, u32 n);
